@@ -22,6 +22,11 @@ router.get('/', async (req: any, res) => {
 
 router.post('/', async (req: any, res) => {
   try {
+    const project = await prisma.project.findFirst({
+      where: { id: req.body.project_id, owner_id: req.user.userId }
+    });
+    if (!project) return res.status(403).json({ success: false, message: 'Not authorized to create task in this project' });
+    
     const task = await prisma.task.create({
       data: req.body
     });
